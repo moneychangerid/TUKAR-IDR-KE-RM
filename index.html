@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Converter IDR → RM Premium</title>
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #000;
+        overflow-x: hidden;
+        color: #fff;
+    }
+
+    /* BACKGROUND SYMBOL */
+    .floating-symbols {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: -1;
+    }
+    .symbol {
+        position: absolute;
+        font-size: 24px;
+        color: rgba(255,215,0,0.35);
+        animation: floatUp 8s linear infinite;
+    }
+    @keyframes floatUp {
+        0% { transform: translateY(100vh); opacity: 0; }
+        20% { opacity: 1; }
+        100% { transform: translateY(-10vh); opacity: 0; }
+    }
+
+    /* CARD */
+    .card {
+        width: 90%;
+        max-width: 480px;
+        margin: 30px auto;
+        padding: 25px;
+        border-radius: 20px;
+        background: rgba(30,30,30,0.6);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,215,0,0.45);
+        box-shadow: 0 0 25px rgba(255,215,0,0.4);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 15px;
+        color: gold;
+        font-size: 24px;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 12px;
+        margin: 8px 0;
+        border-radius: 12px;
+        border: none;
+        outline: none;
+        background: #111;
+        color: #fff;
+        font-size: 15px;
+        border: 1px solid #444;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 14px;
+        background: gold;
+        color: black;
+        border: none;
+        margin-top: 10px;
+        border-radius: 14px;
+        font-weight: bold;
+        font-size: 17px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .btn:hover {
+        background: #ffea77;
+        transform: scale(1.03);
+    }
+
+    #totalDisplay {
+        text-align: center;
+        font-size: 22px;
+        margin-top: 15px;
+        color: gold;
+        font-weight: bold;
+    }
+
+    /* TESTIMONI */
+    .testi-box {
+        margin-top: 25px;
+        padding: 15px;
+        border-radius: 15px;
+        background: rgba(255,215,0,0.1);
+        border: 1px solid rgba(255,215,0,0.25);
+        height: 200px;
+        overflow-y: auto;
+    }
+    .testi-item {
+        background: rgba(255,255,255,0.08);
+        padding: 10px;
+        margin: 8px 0;
+        border-radius: 10px;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    /* MARQUEE */
+    .marquee {
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        margin-top: 20px;
+        font-size: 15px;
+        color: gold;
+    }
+    .marquee span {
+        display: inline-block;
+        padding-left: 100%;
+        animation: marqueeMove 12s linear infinite;
+    }
+    @keyframes marqueeMove {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
+    }
+
+    /* PREVIEW FOTO */
+    #previewImg {
+        width: 100%;
+        margin-top: 10px;
+        border-radius: 12px;
+        display: none;
+        border: 1px solid gold;
+    }
+</style>
+</head>
+<body>
+
+<div class="floating-symbols" id="symbolContainer"></div>
+
+<div class="card">
+    <h2>Convert IDR → RM</h2>
+
+    <div class="marquee"><span>Proses Cepat • Aman • No Drama • Responsif • Trusted • Support 24 Jam</span></div>
+
+    <h3 style="color:gold; margin-top:20px;">Konfirmasi Data</h3>
+
+    <input type="text" id="nama" placeholder="Nama Anda">
+    <input type="text" id="nomor" placeholder="Nomor WhatsApp">
+
+    <!-- Upload Foto Bukti -->
+    <label style="margin-top:10px; color:gold;">Upload Bukti Transfer</label>
+    <input type="file" id="buktiFoto" accept="image/*">
+
+    <img id="previewImg">
+
+    <!-- Link tetap ada -->
+    <input type="text" id="bukti" placeholder="Link / Catatan Tambahan (opsional)">
+
+    <h3 style="color:gold; margin-top:20px;">Pilih Metode</h3>
+    <select id="metode">
+        <option value="maybank">Maybank — Rate 3700</option>
+        <option value="tng">TNG — Rate 3700</option>
+        <option value="qris">QRIS — Rate 3600</option>
+    </select>
+
+    <input type="number" id="jumlahIDR" placeholder="Masukkan jumlah IDR">
+
+    <button class="btn" onclick="hitung()">Hitung Total Convert</button>
+
+    <div id="totalDisplay"></div>
+
+    <button class="btn" onclick="kirimWA()" style="background:#00e676;">Konfirmasi ke Admin</button>
+
+    <h3 style="color:gold; margin-top:30px;">Testimoni</h3>
+    <div class="testi-box" id="testiBox"></div>
+</div>
+
+<script>
+// BACKGROUND SYMBOL
+const symbols = ["$", "RM", "¥", "€", "₩", "₱", "£", "฿"]; 
+const container = document.getElementById("symbolContainer");
+for (let i = 0; i < 40; i++) {
+    const el = document.createElement("div");
+    el.className = "symbol";
+    el.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+    el.style.left = Math.random() * 100 + "%";
+    el.style.animationDuration = 6 + Math.random() * 6 + "s";
+    el.style.fontSize = 18 + Math.random() * 20 + "px";
+    container.appendChild(el);
+}
+
+// PREVIEW FOTO
+document.getElementById("buktiFoto").addEventListener("change", function() {
+    const file = this.files[0];
+    if (!file) return;
+
+    const img = document.getElementById("previewImg");
+    img.src = URL.createObjectURL(file);
+    img.style.display = "block";
+});
+
+// HITUNG ANIMASI
+function animateValue(id, start, end, duration) {
+    let range = end - start;
+    let startTime = performance.now();
+
+    function update(currentTime) {
+        let progress = Math.min((currentTime - startTime) / duration, 1);
+        let value = (progress * range + start).toFixed(2);
+        document.getElementById(id).innerText = "Total RM: " + Number(value).toLocaleString();
+        if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+}
+
+function hitung() {
+    const jumlah = Number(document.getElementById("jumlahIDR").value);
+    const metode = document.getElementById("metode").value;
+
+    let rate = metode === "qris" ? 3600 : 3700; // IDR per RM
+    let total = jumlah / rate;
+
+    animateValue("totalDisplay", 0, total, 900);
+}
+
+// TESTIMONI
+const testi = [
+    "Fast banget prosesnya!",
+    "Admin ramah & responsif.",
+    "Langsung cair ke rekening, mantap!",
+    "Rate tinggi, puas banget.",
+    "Next bakal convert lagi di sini.",
+    "Amanah, trusted parah.",
+    "Gak pake ribet.",
+    "Sesuai janji, cepat!",
+    "Top service!",
+    "Bukti transfer langsung dicek."
+];
+testi.forEach(t => {
+    let div = document.createElement("div");
+    div.className = "testi-item";
+    div.innerText = t;
+    document.getElementById("testiBox").appendChild(div);
+});
+
+// WA — Kirim + Foto
+function kirimWA() {
+    let nama = document.getElementById("nama").value;
+    let nomor = document.getElementById("nomor").value;
+    let bukti = document.getElementById("bukti").value;
+
+    let msg =
+`Halo Admin, saya ingin konfirmasi convert:
+
+Nama: ${nama}
+Nomor: ${nomor}
+Catatan: ${bukti}`;
+
+    let waUrl = `https://wa.me/6281385371544?text=${encodeURIComponent(msg)}`;
+    window.open(waUrl, "_blank");
+}
+</script>
+
+</body>
+</html>

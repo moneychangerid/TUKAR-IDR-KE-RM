@@ -166,9 +166,21 @@
 
     <h3 style="color:gold; margin-top:20px;">Pilih Metode</h3>
     <select id="metode">
-        <option value="maybank">Maybank — Rate 3700</option>
-        <option value="tng">TNG — Rate 3700</option>
-        <option value="qris">QRIS — Rate 3600</option>
+        <!-- BANK -->
+        <option value="bri">BRI — Rate 3600</option>
+        <option value="seabank">SEABANK — Rate 3600</option>
+        <option value="btn">BTN — Rate 3600</option>
+        <option value="mandiri">MANDIRI — Rate 3700</option>
+        <option value="bankjago">BANK JAGO — Rate 3700</option>
+        <option value="cimb">CIMB — Rate 3700</option>
+
+        <!-- E WALLET -->
+        <option value="dana">DANA — Rate 3700</option>
+        <option value="ovo">OVO — Rate 3600</option>
+        <option value="gopay">GOPAY — Rate 3700</option>
+
+        <!-- QRIS -->
+        <option value="qris">QRIS — Rate 3700</option>
     </select>
 
     <input type="number" id="jumlahIDR" placeholder="Masukkan jumlah IDR">
@@ -225,9 +237,26 @@ function hitung() {
     const jumlah = Number(document.getElementById("jumlahIDR").value);
     const metode = document.getElementById("metode").value;
 
-    let rate = metode === "qris" ? 3600 : 3700; // IDR per RM
-    let total = jumlah / rate;
+    let rate;
+    switch(metode) {
+        // BANK
+        case "bri":
+        case "seabank":
+        case "btn":
+        case "ovo":
+            rate = 3600;
+            break;
+        case "mandiri":
+        case "bankjago":
+        case "cimb":
+        case "dana":
+        case "gopay":
+        case "qris":
+            rate = 3700;
+            break;
+    }
 
+    let total = jumlah / rate;
     animateValue("totalDisplay", 0, total, 900);
 }
 
